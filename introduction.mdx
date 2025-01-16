@@ -1,71 +1,52 @@
 ---
 title: Introduction
-description: "Welcome to the home of your new documentation"
+description: "开始你的**vast tools**使用之旅"
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
-/>
-
-## Setting up
-
-The first step to world-class documentation is setting up your editing environments.
+## vast tools是什么
+**vast tools**是一个专为C/C++定制的IR编译和分析工具集。在**vast tools**中，你可以使用`wllvm`作为C/C++编译器生成IR，还可以使用`vast-checker`检测C/C++程序漏洞。查看**wllvm使用指南**和**vast-checker使用指南**了解更多。
 
 <CardGroup cols={2}>
   <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
+    title="wllvm使用指南"
+    icon="code"
+    href="essentials/wllvm"
   >
-    Get your docs set up locally for easy development
+    使用wllvm编译和连接C/C++项目
   </Card>
   <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
+    title="vast-checker使用指南"
+    icon="magnifying-glass-chart"
+    href="essentails/vast-checker-introduction"
   >
-    Preview your changes before you push to make sure they're perfect
+    使用vast-checker检测C/C++程序漏洞
   </Card>
 </CardGroup>
 
-## Make it yours
+## Make you life easier
 
-Update your docs to your brand and add valuable content for the best user conversion.
+厌烦了每次编译需要键入长长的命令？试试**vast tools**自带的一键编译，链接和测试脚本。
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
+    title="vcompile"
+    icon="scroll"
+    href="scripts/vcompile"
   >
-    Customize your docs to your company's colors and brands
+    一键编译C/C++项目
   </Card>
   <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
+    title="vcheck-juliet"
+    icon="j"
+    href="scripts/juliet"
   >
-    Automatically generate endpoints from an OpenAPI spec
+    一键测试juliet test suite
   </Card>
   <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/content/components/accordions"
+    title="vchecker-small"
+    icon="truck-fast"
+    href="scripts/small"
   >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
+    一键测试轻量级C程序测试集
   </Card>
 </CardGroup>
