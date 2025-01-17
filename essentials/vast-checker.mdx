@@ -1,3 +1,53 @@
 ---
 title: vast-checker使用指南
 ---
+
+## vast-checker简介
+`vast-checker`是一个分析C/C++程序上的静态分析器。目前`vast-checker`支持C语言上的[内存泄漏检测](https://en.wikipedia.org/wiki/Memory_leak)和[缓存溢出检测](https://en.wikipedia.org/wiki/Buffer_overflow)。
+
+## Basic usage
+`vast-checker`需要一个链接好的.thin文件作为输入进行分析。默认情况下，`vast-checker`进行内存泄漏分析。你也可以给`vast-checker`传递下面的可选参数改变分析器的行为：
+<ResponseField name="-a|--analysis" type="string" default="mld">
+指定分析类型，目前支持两种分析：
+- **mld**: 内存泄漏分析
+- **bof**: 缓存溢出分析
+</ResponseField>
+<ResponseField name="-d" type="path" default="">
+指定在分析时产生的中间文件所在的目录，方便在分析后删除中间文件。如果没有指定，则由`vast-checker`选择一个目录。
+</ResponseField>
+<ResponseField name="-j" type="int" default="1">
+指定分析时的线程数。
+</ResponseField>
+<ResponseField name="-h|--help">
+打印帮助信息。
+</ResponseField>
+
+<RequestExample>
+```bash default
+vast-checker -t test.thin
+```
+</RequestExample>
+<ResponseExample>
+```bash with more options
+vast-checker -t test.thin -a mld -j 8 -d /tmp
+```
+</ResponseExample>
+
+## 使用vast-checker
+
+<CardGroup cols={2}>
+  <Card
+    title="light"
+    icon="square-1"
+    href="/essentials/vast-checker/small"
+  >
+    测试轻量级C程序测试集
+  </Card>
+  <Card
+    title="juliet"
+    icon="square-2"
+    href="/essentials/vast-checker/juliet"
+  >
+    测试juliet test suite
+  </Card>
+</CardGroup>

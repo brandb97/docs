@@ -19,6 +19,10 @@
     {
       "name": "Support",
       "url": "mailto:502024330056@smail.nju.edu.cn"
+    },
+    {
+      "name": "Docker",
+      "url": "/essentials/docker"
     }
   ],
   "topbarCtaButton": {
@@ -46,11 +50,20 @@
       ]
     },
     {
+      "group": "vast-checker",
+      "pages": [
+        "essentials/vast-checker/small",
+        "essentials/vast-checker/juliet",
+        "essentials/vast-checker/mld-msg",
+        "essentials/vast-checker/bof-msg"
+      ]
+    },
+    {
       "group": "一键测试",
       "pages": [
         "scripts/vcompile",
-        "scripts/juliet",
-        "scripts/small"
+        "scripts/small",
+        "scripts/juliet"
       ]
     }
   ]
