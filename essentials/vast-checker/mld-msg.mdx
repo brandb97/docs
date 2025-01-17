@@ -1,0 +1,13 @@
+---
+title: Memory Leak报错信息
+---
+
+如果你成功运行了[vast-checker](/essentials/vast-checker)检测memory leak，你会得到类似下面的报错信息：
+
+> [VAST debug] <font color="red">Memory leak detected</font>, in <font color='fuchsia'>loc("code.c":47:21)</font>, 
+<ins>operation <font color='orange'>%7 = hl.call @"malloc(unsigned long)"(%6) : (ui64) -> !hl.ptr\<ui8\></font> allocates memory without free</ins>
+
+这条报错信息可以分为三个部分：
+- 错误原因：<font color="red">Memory leak detected</font>，表示检测到了内存泄漏。
+- 产生错误的源代码位置：<font color='fuchsia'>loc("code.c":47:21)</font>，表示内存泄漏发生在`code.c`的第47行21列。
+- 更详细的描述：下划线标注的地方更详细的描述了错误的原因。在上面的例子中发生错误的原因是<font color='orange'>%7 = hl.call @"malloc(unsigned long)"(%6) : (ui64) -> !hl.ptr\<ui8\></font>这条IR，分配的内存未被释放。

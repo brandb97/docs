@@ -1,0 +1,16 @@
+---
+title: check juliet test suite
+---
+
+<Tip>使用vast-checker前，需要`wllvm`编译和链接生成.thin文件。如果你还不熟悉`wllvm`，不妨看看[wllvm使用指南](/essentials/wllvm.mdx)</Tip>
+
+## juliet test suite简介
+
+[juliet test suite](https://github.com/arichardson/juliet-test-suite-c.git)是许多[CWE](https://cwe.mitre.org)测试用例的集合。**juliet test suite**还提供了`cmake`构建系统将每个CWE测试用例编译成单个可执行文件。于是，只要简单的给`cmake`传递`-DCMAKE_C_COMPILER=wllvm`就可以使用`wllvm`编译测试用例。
+
+## 检测memory leak
+
+
+
+## 检测buffer overflow
+<Warning>未经测试的功能</Warning>

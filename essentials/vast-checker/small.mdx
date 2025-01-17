@@ -1,0 +1,39 @@
+---
+title: check small test cases
+---
+
+<Tip>使用vast-checker前，需要`wllvm`编译和链接生成.thin文件。如果你还不熟悉`wllvm`，不妨看看[wllvm使用指南](/essentials/wllvm.mdx)</Tip>
+
+## 检测memory leak
+<Steps>
+  <Step title="使用wllvm编译和链接memory leak test cases">
+    切换到`/home/ubuntu/src/c_test_cases/memoryLeak`
+    ```bash
+    cd /home/ubuntu/src/c_test_cases/memoryLeak
+    ```
+    运行`build.sh`脚本编译得到可执行文件`build/target`，`build.sh`已经设置了`CC=wllvm`
+    ```bash
+    bash ./build.sh
+    ```
+    使用`extract-bc`得到`target.thin`
+    ```bash
+    extract-bc --mlir build/target -o target.thin
+    ```
+  </Step>
+  <Step title="vast-checker检测target.thin">
+    ```bash
+    vast-checker -a mld -t target.thin -j 4
+    ```
+    现在你应该看到`vast-checker`成功的找到了10个`Memory Leak`，如果你想知道这些memory leak error message到底在说什么，请看[这里](/essentials/vast-checker/mld-msg)。
+  </Step>
+</Steps>
+
+## 检测buffer over flow
+<Steps>
+  <Step title="使用wllvm编译和链接buffer over flow test cases">
+    These are instructions or content that only pertain to the first step.
+  </Step>
+  <Step title="vast-checker检测target.thin">
+    These are instructions or content that only pertain to the second step.
+  </Step>
+</Steps>
