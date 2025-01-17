@@ -22,8 +22,8 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://github.com/brandb97/docs",
+    "type": "github"
   },
   "tabs": [
     {
@@ -53,8 +53,5 @@
         "scripts/small"
       ]
     }
-  ],
-  "footerSocials": {
-    "github": "https://github.com/brandb97/docs"
-  }
+  ]
 }

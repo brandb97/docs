@@ -4,40 +4,219 @@ title: wllvm使用指南
 
 ## wllvm简介
 
-**wllvm**是一个可以抓取编译命令的python项目。**wllvm**提供了`wllvm`和`wllvm++`分别用来代替系统中的C/C++编译器。和传统编译器不同的是，`wllvm`和`wllvm++`除了会将源代码编译成目标文件外，还会给每个源代码生成一份IR文件。最后，**wllvm**还提供了`extract-bc`将一个可执行文件对应的所有IR文件链接。
+**wllvm**是一个可以抓取编译命令的python项目。**wllvm**提供了`wllvm`和`wllvm++`分别用来代替系统中的C/C++编译器。和传统编译器不同的是，`wllvm`和`wllvm++`除了会将源代码编译成目标文件外，还会给每个源代码生成一份IR文件。最后，**wllvm**还提供了`extract-bc`将一个可执行文件对应的所有IR文件链接起来。
 
 ## simple example
+下面以*redis*为例，告诉你如何在一个真实项目上使用`wllvm`。
+
+<Steps>
+<Step title="设置wllvm环境变量">
+
+首先你需要指定希望生成的IR类型。以下是可供选择的IR类型。
+|类型 |描述                                                   |
+|----|-------------------------------------------------------|
+|hl  |High Level IR。结构类似AST，保留高级语义，类型信息。         |
+|std |Standard IR。结构类似AST，将hl中的类型换成mlir内置的标准类型。|
+|ll  |Low level IR。结构类似汇编。                              |
+|llvm|mlir内置的llvm方言。                                     |
+
+```bash setup-env.sh
+export MLIR_LEVEL=hl # 可以设置为hl, ll, std, 或llvm。默认为hl
+```
+</Step>
+
+<Step title="使用wllvm编译">
+
+你需要将`CC`设置为`wllvm`，从而让构建系统使用`wllvm`进行编译。
+```bash compile-redis.sh
+cd /home/ubuntu/src/redis
+CC=wllvm make -j 8
+```
+</Step>
+
+<Step title="使用extract-bc链接">
+
+`extract-bc`可以对可执行文件和库文件链接。
+
+链接可执行文件**redis-server**，链接后的结果存储在redis-server.thin中。
+```bash link-redis-server.sh
+# -j 8表示使用8个线程并行链接
+extract-bc --mlir /home/ubuntu/src/redis/src/redis-server -o redis-server.thin -j 8
+```
+
+链接库文件**liblua.a**，链接后的结果存储在liblua.a.thin
+```bash link-liblua.sh
+extract-bc --mlir -b /home/lidongyan/src/redis/deps/lua/src/liblua.a -o liblua.a.thin
+```
+</Step>
+
+<Step title="使用vast-link查看.thin文件">
+想知道redis-server.thin里有什么？使用`vast-link`查看吧。
+```bash show-redis-server.sh
+vast-link --show redis-server.thin
+```
+</Step>
+</Steps>
 
 ## open source projects
 
+<Note>以下所有项目省略了设置`MLIR_LEVEL`，你可以在编译项目前手动设置</Note>
+
 <AccordionGroup>
   <Accordion title="redis">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    CC=wllvm make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="git">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    make configure
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm ./configure
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="FFmpeg">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    WLLVM_CONFIGURE_ONLY=1 ./configure --cc=wllvm --cxx=g++ --disable-x86asm
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="openssl">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm CXX=wllvm++ ./Configure
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="openssh">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    autoreconf
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm ./configure
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="vim">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    # 已在/home/ubuntu/src/vim/src/Makefile中增加了`CC=wllvm`
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="httpd">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    ./buildconf
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm CPPFLAGS='-I /usr/include/libxml2' ./configure --with-included-apr --with-libxml2
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="coturn">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm ./configure
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="ImageMagicK">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    WLLVM_CONFIGURE_ONLY=1 ./configure CC=wllvm CXX=g++ --disable-openmp
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 
   <Accordion title="freeradius">
+  <Tabs>
+    <Tab title="编译">
+    ```bash
+    WLLVM_CONFIGURE_ONLY=1 CC=wllvm ./configure \
+      --with-talloc-lib-dir=/home/ubuntu/bin/talloc/lib \
+      --with-talloc-include-dir=/home/ubuntu/bin/talloc/include \
+      --with-kqueue-lib-dir=/home/ubuntu/bin/libkqueue/lib \
+      --with-kqueue-include-dir=/home/ubuntu/bin/libkqueue/include/kqueue \
+      --disable-wasm
+    make -j 32
+    ```
+    </Tab>
+    <Tab title="链接">
+    ```bash
+    ```
+    </Tab>
+  </Tabs>
   </Accordion>
 </AccordionGroup>
