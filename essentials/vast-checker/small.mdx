@@ -25,7 +25,7 @@ title: check small test cases
     vast-checker -a mld -t target.thin -j 4
     ```
     现在你应该看到`vast-checker`成功的找到了10个`Memory Leak`
-    <Tab title="内存泄漏报错">
+    <Accordion title="内存泄漏报错">
     ```txt
     [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":23:32), operation %21 = hl.call @"malloc(unsigned long)"(%20) : (ui64) -> !hl.ptr<ui8> allocates memory without free
     [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":39:32), operation %22 = hl.call @"malloc(unsigned long)"(%21) : (ui64) -> !hl.ptr<ui8> allocates memory without free
@@ -38,17 +38,254 @@ title: check small test cases
     [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":88:24), operation %9 = hl.call @"malloc(unsigned long)"(%8) : (ui64) -> !hl.ptr<ui8> allocates memory without free
     [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":104:25), operation %8 = hl.call @"malloc(unsigned long)"(%7) : (ui64) -> !hl.ptr<ui8> allocates memory without free
     ```
-    </Tab>
+    </Accordion>
     如果你想知道这些memory leak error message到底在说什么，请看[这里](/essentials/vast-checker/mld-msg)。
+  </Step>
+  <Step title="使用脚本代替多条命令">
+    不想输入多条命令？试试下面的方法
+    ```bash
+    cd /home/ubuntu/src/c_test_cases/
+    python3 mld_test.py
+    ```
   </Step>
 </Steps>
 
 ## 检测buffer over flow
 <Steps>
   <Step title="使用wllvm编译和链接buffer over flow test cases">
-    These are instructions or content that only pertain to the first step.
+    切换到`/home/ubuntu/src/c_test_cases/bufferOverflow`
+    ```bash
+    cd /home/ubuntu/src/c_test_cases/bufferOverflow
+    ```
+    运行`build.sh`脚本编译得到可执行文件`build/target`，`build.sh`已经设置了`CC=wllvm`
+    ```bash
+    bash ./build.sh
+    ```
+    使用`extract-bc`得到`target.thin`
+    ```bash
+    extract-bc --mlir build/target -o target.thin
+    ```
   </Step>
   <Step title="vast-checker检测target.thin">
-    These are instructions or content that only pertain to the second step.
+    ```bash
+    vast-checker -a bof -t target.thin -j 4
+    ```
+    现在你应该看到`vast-checker`成功的输出了149条`bof found`，其中有141条`potential bof found`和8条`certain bof found`。
+    <Accordion title="缓存溢出报错">
+    ```txt
+    bof in function : arrayFieldSensitiveTNCase1()
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":37:12)
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":38:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":39:22)
+
+    bof in function : arrayFieldSensitiveTNCase2()
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":73:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":71:16)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":78:20)
+    bof in function : arrayFieldSensitiveTPCase1()
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":23:12)
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":24:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":25:18)
+    bof in function : arrayFieldSensitiveTPCase2()
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":56:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":54:16)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":57:16)
+    unknown cast kind NullToPointer treated as none!
+    bof in function : combinedFieldSensitiveTNCase()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":230:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":231:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":232:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":233:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":234:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":229:20)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":237:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":238:26)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":239:33)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":245:28)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":246:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":247:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":254:28)
+    bof in function : combinedFieldSensitiveTPCase()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":195:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":196:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":197:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":198:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":199:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":194:20)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":202:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":203:26)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":204:29)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":210:28)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":211:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":212:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":219:28)
+    bof in function : structFieldSensitiveTNCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":175:24)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":179:24)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":181:17)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":182:23)
+    bof in function : structFieldSensitiveTPCase1()
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":100:16)
+    certain bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":103:19)
+    bof in function : structFieldSensitiveTPCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":150:24)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":153:24)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/fieldSensitive.c":154:20)
+    bof in function : baseTNCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/base.c":34:21)
+    bof in function : baseTPCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/base.c":22:17)
+    bof in function : buffAliasTNCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":51:12)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":54:15)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":55:12)
+    bof in function : buffAliasTNCase1FlowSensitive()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":84:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":84:15)
+    bof in function : buffAliasTNCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":116:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":116:23)
+    bof in function : buffAliasTNCase2FlowSensitive()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":150:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":150:22)
+    bof in function : buffAliasTNCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":186:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":186:28)
+    bof in function : buffAliasTNCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":224:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":224:28)
+    bof in function : buffAliasTNCase5()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":258:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":258:26)
+    bof in function : buffAliasTNCase6()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":309:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":309:28)
+    bof in function : buffAliasTNCase7()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":378:8)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":389:14)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":389:28)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":385:14)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":385:28)
+    bof in function : buffAliasTPCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":35:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":38:15)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":39:13)
+    bof in function : buffAliasTPCase1FlowSensitive()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":70:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":70:16)
+    bof in function : buffAliasTPCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":100:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":100:24)
+    bof in function : buffAliasTPCase2FlowSensitive()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":133:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":133:23)
+    bof in function : buffAliasTPCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":168:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":168:29)
+    bof in function : buffAliasTPCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":205:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":205:29)
+    bof in function : buffAliasTPCase5()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":241:5)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":241:26)
+    bof in function : buffAliasTPCase6()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":283:9)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":283:28)
+    bof in function : buffAliasTPCase7()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":338:8)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":349:14)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":349:24)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":345:14)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffAlias.c":345:24)
+    bof in function : buffOffsetTNCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":41:9)
+    bof in function : buffOffsetTNCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":75:8)
+    bof in function : buffOffsetTNCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":139:8)
+    bof in function : buffOffsetTPCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":26:9)
+    bof in function : buffOffsetTPCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":58:8)
+    bof in function : buffOffsetTPCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/buffOffset.c":107:8)
+    bof in function : multipleVariableTNCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":96:20)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":99:25)
+    bof in function : multipleVariableTNCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":143:16)
+    bof in function : multipleVariableTNCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":188:22)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":188:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":189:45)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":194:22)
+    bof in function : multipleVariableTPCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":73:20)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":77:25)
+    bof in function : multipleVariableTPCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":121:16)
+    bof in function : multipleVariableTPCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":164:22)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":164:21)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":165:45)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/multipleVariable.c":170:22)
+    bof in function : pathSensitiveTNCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":70:24)
+    bof in function : pathSensitiveTNCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":115:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":117:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":118:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":122:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":123:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":127:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":128:23)
+    bof in function : pathSensitiveTNCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":172:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":175:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":178:19)
+    bof in function : pathSensitiveTNCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":217:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":220:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":224:19)
+    bof in function : pathSensitiveTNCase5()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":263:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":266:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":271:19)
+    bof in function : pathSensitiveTNCase6()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":346:24)
+    bof in function : pathSensitiveTPCase1()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":41:20)
+    bof in function : pathSensitiveTPCase2()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":84:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":86:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":87:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":91:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":92:23)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":96:25)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":97:23)
+    bof in function : pathSensitiveTPCase3()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":151:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":154:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":157:15)
+    bof in function : pathSensitiveTPCase4()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":195:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":198:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":202:15)
+    bof in function : pathSensitiveTPCase5()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":241:13)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":244:19)
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":248:15)
+    bof in function : pathSensitiveTPCase6()
+    potential bof found at loc("/home/ubuntu/src/c_test_cases/bufferOverflow/pathSensitive.c":309:20)
+    ```
+    </Accordion>
+    如果你想了解更多buffer overflow error message的信息，请看[这里](/essentials/vast-checker/bof-msg)。
+  </Step>
+  <Step title="使用脚本代替多条命令">
+    不想输入多条命令？试试下面的方法
+    ```bash
+    cd /home/ubuntu/src/c_test_cases/
+    python3 bof_test.py
+    ```
   </Step>
 </Steps>

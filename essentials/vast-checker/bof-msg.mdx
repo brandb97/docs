@@ -1,3 +1,14 @@
 ---
 title: Buffer Overflow报错信息
 ---
+
+如果你成功运行了[vast-checker](/essentials/vast-checker)检测buffer overflow，你会得到类似下面的报错信息：
+> <font color="red">potential bof found</font> at <font color='fuchsia'>loc("code.c":151:13)</font>
+
+以及
+
+> <font color="red">certain bof found</font> at <font color='fuchsia'>loc("code.c":100:16)</font>
+
+这条报错信息可以分为两部分：
+- 错误原因：<font color="red">potential bof found</font>表示检测到可能发生缓存溢出，<font color="red">certain bof found</font>表示检测到一定会发生缓存溢出。
+- 缓存溢出位置：<font color='fuchsia'>loc("code.c":100:16)</font>，表示内存泄漏发生在`code.c`的第100行16列。

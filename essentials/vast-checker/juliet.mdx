@@ -71,6 +71,12 @@ bash ./link-and-check.sh 401 mld /home/ubuntu/src/juliet-test-suite-c/tmp 10s 2
 ```
 此时屏幕上会输出所有内存泄漏报错信息。
 </Step>
+<Step title="juliet.py一键编译+链接+检测">
+**juliet test suite**自带了`juliet.py`供你一键编译、链接和检测。
+```bash
+python3 ./juliet.py -cgme 401
+```
+</Step>
 </Steps>
 
 ## 检测buffer overflow
