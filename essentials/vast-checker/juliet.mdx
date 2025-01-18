@@ -6,11 +6,72 @@ title: check juliet test suite
 
 ## juliet test suite简介
 
-[juliet test suite](https://github.com/arichardson/juliet-test-suite-c.git)是许多[CWE](https://cwe.mitre.org)测试用例的集合。**juliet test suite**还提供了`cmake`构建系统将每个CWE测试用例编译成单个可执行文件。于是，只要简单的给`cmake`传递`-DCMAKE_C_COMPILER=wllvm`就可以使用`wllvm`编译测试用例。
+[juliet test suite](https://github.com/arichardson/juliet-test-suite-c.git)是许多[CWE](https://cwe.mitre.org)测试用例的集合。这些测试用例主要功能是检测内存漏洞，其中包含了CWE401用来测试内存泄漏，和CWE121、CWE122、CWE680等测试缓存溢出。**juliet test suite**还提供了`cmake`构建系统将每个CWE测试用例编译成单个可执行文件，只要简单的给`cmake`传递`-DCMAKE_C_COMPILER=wllvm`就可以使用`wllvm`编译测试用例。
+
+## CWE测试用例简介
+
+一个CWE测试用例可以使用不同的宏定义被编译成两种可执行文件，分别是**good**可执行文件和**bad**可执行文件。其中**good**版本不包含内存错误，**bad**版本则包含一个内存错误。
 
 ## 检测memory leak
 
-
+<Steps>
+<Step title="使用wllvm编译CWE401">
+切换工作目录到`/home/ubuntu/src/juliet-test-suite-c`
+```bash
+cd /home/ubuntu/src/juliet-test-suite-c
+```
+使用**juliet test suite**自带的编译脚本`juliet.py`为CWE401测试集生成Makefile。`juliet.py`中已经指定C编译器为`wllvm`
+```bash
+python3 ./juliet.py -g 401
+```
+编译CWE401测试集
+```bash
+cd testcases/CWE401_Memory_Leak
+make -j 16
+```
+</Step>
+<Step title="使用extract-bc链接CWE401">
+切换工作目录到`/home/ubuntu/src/juliet-test-suite-c/bin/CWE401`
+```bash
+cd /home/ubuntu/src/juliet-test-suite-c/bin/CWE401
+```
+在这个目录下的`bad`和`good`子目录下分别存放了有内存泄漏和内存安全的可执行文件。你可以对任何一个文件使用extract-bc链接，比如你可以将`bad/CWE401_Memory_Leak__char_calloc_01-bad`链接为`bad.thin`
+```bash
+extract-bc --mlir bad/CWE401_Memory_Leak__char_calloc_01-bad -o bad.thin
+```
+</Step>
+<Step title="使用vast-checker检测内存泄漏">
+检测链接得到的.thin文件，比如上一步得到的bad.thin
+```bash
+vast-checker -a mld -t bad.thin
+```
+此时你应该看到`vast-checker`成功输出了一条报错信息
+<Tab title="内存泄漏报错">
+```txt
+[VAST debug] Memory leak detected, in loc("/home/ubuntu/src/juliet-test-suite-c/testcases/CWE401_Memory_Leak/CMakeFiles/CWE401_Memory_Leak__char_calloc_01-bad.dir/s01/.CWE401_Memory_Leak__char_calloc_01.c.o.hl":24:13), operation %10 = hl.call @"calloc(unsigned long, unsigned long)"(%8, %9) : (!hl.long< unsigned >, !hl.long< unsigned >) -> !hl.ptr<!hl.void> allocates memory without free
+```
+</Tab>
+如果你想知道这些memory leak error message到底在说什么，请看[这里](/essentials/vast-checker/mld-msg)。
+</Step>
+<Step title="使用脚本测试所有CWE401测试用例">
+复制`/home/ubuntu/src/juliet-test-suite-c/link-and-check.sh`到`/home/ubuntu/src/juliet-test-suite-c/bin/`
+```bash
+cd /home/ubuntu/src/juliet-test-suite-c/bin/
+cp /home/ubuntu/src/juliet-test-suite-c/link-and-check.sh .
+```
+运行`link-and-check.sh`链接和测试所有测试用例
+```bash
+## 参数含义解释
+# @401: CWE测试用例编号
+# @mld: 测试类型，这里为mld (memory leak detection)
+# @/home/ubuntu/src/juliet-test-suite-c: 中间文件目录
+# @10s: 指定每个测试用例的最长测试时间
+# @2: 指定vast-checker使用的线程数
+bash ./link-and-check.sh 401 mld /home/ubuntu/src/juliet-test-suite-c/tmp 10s 2
+```
+此时屏幕上会输出所有内存泄漏报错信息。
+</Step>
+</Steps>
 
 ## 检测buffer overflow
 <Warning>未经测试的功能</Warning>

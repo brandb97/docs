@@ -24,7 +24,22 @@ title: check small test cases
     ```bash
     vast-checker -a mld -t target.thin -j 4
     ```
-    现在你应该看到`vast-checker`成功的找到了10个`Memory Leak`，如果你想知道这些memory leak error message到底在说什么，请看[这里](/essentials/vast-checker/mld-msg)。
+    现在你应该看到`vast-checker`成功的找到了10个`Memory Leak`
+    <Tab title="内存泄漏报错">
+    ```txt
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":23:32), operation %21 = hl.call @"malloc(unsigned long)"(%20) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":39:32), operation %22 = hl.call @"malloc(unsigned long)"(%21) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":94:26), operation %24 = hl.call @"malloc(unsigned long)"(%23) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/fieldSensitive.c":98:27), operation %44 = hl.call @"malloc(unsigned long)"(%43) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/base.c":20:21), operation %3 = hl.call @"malloc(unsigned long)"(%2) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/base.c":47:21), operation %7 = hl.call @"malloc(unsigned long)"(%6) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":20:23), operation %11 = hl.call @"malloc(unsigned long)"(%10) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":65:24), operation %9 = hl.call @"malloc(unsigned long)"(%8) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":88:24), operation %9 = hl.call @"malloc(unsigned long)"(%8) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    [VAST debug] Memory leak detected, in loc("/home/ubuntu/src/c_test_cases/memoryLeak/pathSensitive.c":104:25), operation %8 = hl.call @"malloc(unsigned long)"(%7) : (ui64) -> !hl.ptr<ui8> allocates memory without free
+    ```
+    </Tab>
+    如果你想知道这些memory leak error message到底在说什么，请看[这里](/essentials/vast-checker/mld-msg)。
   </Step>
 </Steps>
 
