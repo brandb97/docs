@@ -19,10 +19,6 @@
     {
       "name": "Support",
       "url": "mailto:502024330056@smail.nju.edu.cn"
-    },
-    {
-      "name": "Docker",
-      "url": "/essentials/docker"
     }
   ],
   "topbarCtaButton": {
@@ -45,6 +41,7 @@
     {
       "group": "Essentials",
       "pages": [
+        "essentials/docker",
         "essentials/wllvm",
         "essentials/vast-checker"
       ]

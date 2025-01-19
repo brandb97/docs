@@ -1,5 +1,88 @@
 ---
-title: Surprise
+title: docker使用指南
 ---
 
-恭喜你，今天是你的节日———愚人节！
+<Note>你需要我们提供的vast-docker-docs文件夹才能运行以下命令</Note>
+
+## 安装docker images
+进入`vast-docker-docs`文件夹。你会看到一个名字为`vast-tools.tar`的docker打包文件，使用`docker load`安装。
+<Warning>目前仅支持x64-linux平台</Warning>
+```bash
+sudo docker load -i vast-tools.tar
+```
+
+## 启动文档服务器
+```bash
+sudo docker compose up -d
+```
+这条命令在你的主机上启动了一个名字为**vast-tools**的容器。容器中部署了一个工作在端口3000的文档服务器。如果你在本地运行了这条命令，可以通过http://localhost:3000在浏览器中打开网页。
+
+## 在容器中运行命令
+```bash
+sudo docker exec -it vast-tools bash
+```
+此时，你应该已经获得一个shell，试试`vcheck-small`命令吧
+```bash
+vcheck-small
+```
+
+## 更新组件
+<Warning>部分组件仅支持私有仓库的合作者更新。其中包括：vast, juliet-test-suite-c, c_test_cases, wllvm</Warning>
+进入`vast-docker-docs`文件夹，打开`Dockerfile`。按照下面的方法注释掉`Dockerfile`中的相应部分，再通过`docker compose up -d`重启，即可更新。
+<AccordionGroup>
+  <Accordion title="更新文档">
+  你需要对以下几行取消注释
+  ```bash
+  ################# UPDATE DOCS ##################
+  WORKDIR /home/ubuntu/src/vast-docs
+  RUN git pull origin main
+  ```
+  </Accordion>
+  <Accordion title="填写github认证信息">
+  为了保证其余组件更新成功，你需要取消这一行的注释
+  ```Dockerfile
+  RUN echo RUN echo https://<Your Github Name>:<Your Personal Access Token> > ~/.git-credentials
+  ```
+  并将你的Github账号名以及[Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)填写到对应位置。
+  </Accordion>
+  <Accordion title="更新vast编译器">
+  你需要对以下几行取消注释
+  ```bash
+  ################# UPDATE VAST ##################
+  WORKDIR /home/ubuntu/src/vast
+  RUN git pull origin stable
+  WORKDIR /home/ubuntu
+  COPY scripts/set-up-compile-vast.sh /home/ubuntu/
+  COPY scripts/set-up-env.sh /home/ubuntu/
+  RUN ./set-up-compile-vast.sh
+  USER root
+  RUN ./set-up-env.sh
+  RUN rm set-up*
+  USER ubuntu
+  ```
+  </Accordion>
+  <Accordion title="更新juliet-test-suite-c">
+  你需要对以下几行取消注释
+  ```bash
+  ################# UPDATE JULIET #################
+  WORKDIR /home/ubuntu/src/juliet-test-suite-c
+  RUN git pull origin docker
+  ```
+  </Accordion>
+  <Accordion title="更新轻量级测试集">
+  你需要对以下几行取消注释
+  ```bash
+  ################# UPDATE SMALL #################
+  WORKDIR /home/ubuntu/src/c_test_cases
+  RUN git pull origin docker
+  ```
+  </Accordion>
+  <Accordion title="更新wllvm">
+  你需要对以下几行取消注释
+  ```bash
+  ################# UPDATE WLLVM #################
+  WORKDIR /home/ubuntu/src/wllvm
+  RUN git pull origin master
+  ```
+  </Accordion>
+</AccordionGroup>
