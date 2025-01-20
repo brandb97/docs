@@ -1,3 +1,51 @@
 ---
 title: vcompile
 ---
+
+`vcompile`可以让你在任何目录下编译和链接你指定的C语言程序。
+```bash
+vcompile [OPTIONS...] PROJECTS
+```
+<Info>你可以选择的C语言程序有：redis, git, ffmpeg, httpd, openssl, openssh, vim, coturn, free radius server, ImageMagicK</Info>
+<RequestExample>
+```bash default
+# 使用8个进程并行编译和链接所有程序，默认生成ll类型的IR
+vcompile -j 8
+```
+```bash ffmpeg-llvm
+# 指定IR类型为llvm，指定程序为ffmpeg，进行编译和链接
+vcompile --mlir llvm ffmpeg -j 8
+```
+```bash compile-only-openssl
+# 指定IR类型为hl，指定程序为openssl，只进行编译
+vcompile --mlir hl -c openssl -j 8
+```
+</RequestExample>
+
+## 命令行参数
+
+<ResponseField name="-c|--compile-only">
+只编译指定项目
+</ResponseField>
+
+<ResponseField name="-l|--link-only">
+只链接指定项目
+</ResponseField>
+
+<ResponseField name="-j|--nthreads" type="int" default="1">
+指定编译和链接使用的线程数
+</ResponseField>
+
+<ResponseField name="--mlir" type="string" default="ll">
+- **hl**: High Level IR。结构类似AST，保留高级语义，类型信息。
+
+- **std**: Standard IR。结构类似AST，将hl中的类型换成mlir内置的标准类型。
+
+- **ll**: Low level IR。结构类似汇编。
+
+- **llvm**: mlir内置的llvm方言。
+</ResponseField>
+
+<ResponseField name="-C|--clean">
+清除编译和链接结果
+</ResponseField>

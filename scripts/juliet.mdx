@@ -1,3 +1,30 @@
 ---
 title: vcheck-juliet
 ---
+
+`vcheck-juliet`让你可以在任何目录测试**juliet test suite**。你只需指定分析的类型和分析时的线程数就可以启动一次分析。
+<RequestExample>
+```bash default
+# 默认测试memory leak，测试集为CWE 401
+vcheck-juliet
+```
+```bash more-thread
+# 使用2个线程测试memory leak
+vcheck-juliet -a mld -j 2
+```
+</RequestExample>
+
+## 命令行参数
+
+<ResponseField name="-a|--analysis" type="string" default="mld">
+- **mld**: 进行内存泄漏检测，测试集为CWE401。
+- ~~**bof**: 进行缓存溢出检测。~~
+</ResponseField>
+
+<ResponseField name="-j|--nthreads" type="int" default="1">
+指定测试使用的线程数。**juliet test suite**单个测试用例较小，建议使用两个线程。
+</ResponseField>
+
+<ResponseField name="-c|--clean">
+清除测试产生的中间文件。
+</ResponseField>

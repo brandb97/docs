@@ -1,3 +1,34 @@
 ---
 title: vcheck-small
 ---
+
+`vcheck-small`让你可以在任何目录测试`/home/ubuntu/src/c_test_cases`。你只需指定分析的类型和分析时的线程数就可以启动一次分析。
+<RequestExample>
+```bash default
+# 默认测试memory leak
+vcheck-small
+```
+```bash check-mld
+# 使用8个线程测试memory leak
+vcheck-small -a mld -j 8
+```
+```bash check-bof
+# 使用8个线程测试buffer overflow
+vcheck-small -a bof -j 8
+```
+</RequestExample>
+
+## 命令行参数
+
+<ResponseField name="-a|--analysis" type="string" default="mld">
+- **mld**: 进行内存泄漏检测。
+- **bof**: 进行缓存溢出检测。
+</ResponseField>
+
+<ResponseField name="-j|--nthreads" type="int" default="1">
+指定测试使用的线程数。
+</ResponseField>
+
+<ResponseField name="-c|--clean">
+清除测试产生的中间文件。
+</ResponseField>
